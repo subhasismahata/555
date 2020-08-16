@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+<head>
+	<title>NE555 Astable Multivibrator Frequency and Duty Cycle Calculator</title>
+		<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="../../maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<!-- jQuery library -->
+	<script src="../../ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<!-- Popper JS -->
+	<script src="../../cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+	<!-- Latest compiled JavaScript -->
+	<script src="../../maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	
+	<!-- FontAwesome CSS CDN -->
+	<link rel="stylesheet" href="../../use.fontawesome.com/releases/v5.3.1/css/solid.css" integrity="sha384-VGP9aw4WtGH/uPAOseYxZ+Vz/vaTb1ehm1bwx92Fm8dTrE+3boLfF1SpAtB1z7HW" crossorigin="anonymous">
+	<link rel="stylesheet" href="../../use.fontawesome.com/releases/v5.3.1/css/brands.css" integrity="sha384-rf1bqOAj3+pw6NqYrtaE1/4Se2NBwkIfeYbsFdtiR6TQz0acWiwJbv1IM/Nt/ite" crossorigin="anonymous">
+	<link rel="stylesheet" href="../../use.fontawesome.com/releases/v5.3.1/css/fontawesome.css" integrity="sha384-1rquJLNOM3ijoueaaeS5m+McXPJCGdr5HcA03/VHXxcp2kX2sUrQDmFc3jR5i/C7" crossorigin="anonymous">
+	<!-- Our Custom CSS -->
+	<link rel="stylesheet" href="../framework/SiteStyle.css">    <!-- JQUERY JS -->
+	<script data-ad-client="ca-pub-1155302517384345" async src="../../pagead2.googlesyndication.com/pagead/js/f.txt"></script>
+    <script>
+    	    </script>	<script>
+		function Compute(form) {
+			with(Math) {
+				var Kilo = 1000;
+				var Meg = Kilo * Kilo;
+				var micro = 1 / Meg;
+				var Pico = 1 / (Meg * Meg);
+				var Nano = 1 / (Meg * Kilo);
+				var Precision = 3;
+				var F = Number(form.F.value) * Kilo;
+				var Duty = Number(form.Duty.value) / 100;
+				var RA = Number(form.RA.value) * Kilo;
+				var RB = Number(form.RB.value) * Kilo;
+				var C = Number(form.C.value) * micro;
+
+				if (Duty < .5) {
+					form.Invert.checked = true;
+					Duty = 1 - Duty;
+				} else form.Invert.checked = false;
+
+				if (C != 0 && F != 0 && Duty != 0) {
+					RA = 1.44 * (2 * Duty - 1) / (F * C);
+					RB = 1.44 * (1 - Duty) / (F * C);
+				} else
+				if (F != 0 && Duty != 0) {
+					if (F > 100 * Kilo) C = .001 * micro;
+					else if (F > 10 * Kilo) C = .01 * micro;
+					else if (F > 1 * Kilo) C = .1 * micro;
+					else if (F > 100) C = 1 * micro;
+					else if (F > 10) C = 10 * micro;
+					else if (F > 1) C = 100 * micro;
+					RA = 1.44 * (2 * Duty - 1) / (F * C);
+					RB = 1.44 * (1 - Duty) / (F * C);
+				} else
+				if (RA != 0 && RB != 0 && C != 0) {
+					F = 1.44 / ((RA + RB * 2) * C);
+					Duty = (RA + RB) / ((RA + RB * 2));
+				} else {
+					alert("You must either enter RA and RB or F and Duty Cycle");
+					return false;
+				}
+				C = C / micro;
+				RA = RA / Kilo;
+				RB = RB / Kilo;
+				F = F / Kilo;
+				Duty = Duty * 100;
+				form.C.value = C.toPrecision(Precision);
+				form.RA.value = RA.toPrecision(Precision);
+				form.RB.value = RB.toPrecision(Precision);
+				form.F.value = F.toPrecision(Precision);
+				form.Duty.value = Duty.toPrecision(Precision);
+			}
+		}
+	</script>
+</head>
+
+<body>
+	<div class="wrapper">
+
+
+
+
+<p class="error" id="error_msg_p"></p>		<div class="content">
+			<div class="row">
+				
+				<div class="col-sm-8">
+					<h1 class="page-title">NE555 Astable Multivibrator Frequency and Duty Cycle Calculator</h1>
+					<!-- Content Start  -->
+					<p>This calculator computes the resistors and
+						capacitors for a NE555 timer chip, which has been configured as a astable
+						multivibrator (oscillator), or square wave generator. Just enter in the
+						duty cycle and the frequency and the calculator will compute reasonable
+						values for the resistors and capacitors.</p>
+					<p> Note that the minimum duty
+						cycle is 50 percent, so if you need a smaller duty cycle you need to use
+						an inverter on the output.</p>
+					<p> Also the design equations of the timer are
+						just approximations that can be off by as much as 20% from the empirical
+						results.
+					</p>
+					<form method="POST" name="ParamForm">
+						<table class="table table-bordered">
+							<tr>
+								<td colspan="2"><b>Input:</b></td>
+							</tr>
+							<tr>
+								<td>Frequency</td>
+								<td><input type="text" name="F" size="17"> (KHz)</td>
+							</tr>
+							<tr>
+								<td>Duty Cycle</td>
+								<td><input type="text" name="Duty" size="17"> (%) 
+								<input type="checkbox" name="Invert" value="ON">Invert Output</td>
+							</tr>
+							<tr>
+								<td>RA</td>
+								<td><input type="text" name="RA" size="17"> (KOhm)</td>
+							</tr>
+							<tr>
+								<td>RB</td>
+								<td><input type="text" name="RB" size="17"> (KOhm)</td>
+							</tr>
+							<tr>
+								<td>C</td>
+								<td><input type="text" name="C" size="17"> (uF)</td>
+							</tr>
+							<tr>
+								<td colspan="2" class="text-center">
+									<input type="button" value="Compute" name="B1" onClick="Compute(document.ParamForm);">
+								</td>
+							</tr>
+						</table>
+					</form>
+
+					<h3>Equations:</h3>
+					<p>F=1/T= 1.44/((RA+RB*2)*C)</p>
+					<p>TL= 0.693*RB*C</p>
+					<p>TH= 0.693*(RA+RB)*C</p>
+					<p>D= Duty Cycle= (RA+RB)/(RA+2*RB)</p>
+					<p>Or,</p>
+					<p>RA= 1.44**(2*D-1)/(F*C)</p>
+					<p>RB= 1.44*(1-D)/(F*C)</p>
+					<p><img src="NE555-Schematic.gif" alt="NE555 Circuit Schematic"></p>
+					<p class="image_label">NE555 Circuit Schematic</p>
+					<!-- Content End  -->
+				</div>
+				<div class="col-sm-2">
+					<div>
+   
+</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+	<div class="col-sm-2">
+    </div>
+    
+	
+    </div>
+    </div>
+</body>
+
+
+</html>
